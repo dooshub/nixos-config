@@ -18,9 +18,9 @@
 {
   imports = [ ];
 
-  boot.initrd.availableKernelModules = [ "ata_piix" "xhci_pci" "sd_mod" "sr_mod" ];
+  boot.initrd.availableKernelModules = [ "ata_piix" "mptspi" "sd_mod" "sr_mod" ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ ];
+  boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
@@ -35,7 +35,7 @@
     useDHCP = false;
     hostName = hostName;
     interfaces = {
-      enp0s3.useDHCP = true;
+      ens32.useDHCP = true;
     };
   };
 
