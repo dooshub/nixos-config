@@ -1,0 +1,44 @@
+UEFI
+
+sudo parted /dev/sda -- mklabel gpt
+sudo parted /dev/sda -- mkpart primary 512MiB -8GiB
+sudo parted /dev/sda -- mkpart primary linux-swap -8GiB 100%
+sudo parted /dev/sda -- mkpart ESP fat32 1MiB 512MiB
+sudo parted /dev/sda -- set 3 esp
+sudo mkfs.ext4 -L nixos /dev/sda1
+sudo mkswap -L swap /dev/sda2
+sudo mkfs.fat -F 32 -n boot /dev/sda3
+
+sudo mount /dev/disk/by-label/nixos /mnt
+sudo mkdir -p /mnt/boot
+sudo mount /dev/disk/by-label/boot /mnt/boot
+
+Legacy
+
+sudo parted /dev/sda -- mklabel msdos
+sudo parted /dev/sda -- mkpart primary 1MiB -8GiB
+sudo parted /dev/sda -- mkpart primary linux-swap -8GiB 100%
+sudo mkfs.ext4 -L nixos /dev/sda1
+sudo mkswap -L swap /dev/sda2
+
+sudo mount /dev/disk/by-label/nixos /mnt
+
+
+#####################################################################################""
+
+sudo swapon /dev/sda2
+sudo nixos-generate-config --root /mnt
+sudo nix-env -iA nixos.git
+cd /mnt/etc/nixos
+sudo mkdir nix-config
+sudo git clone https://github.com/dooshub/nix-starter-configs.git /mnt/etc/nixos/nix-config
+sudo cp hardware-configuration.nix /mnt/etc/nixos/nix-config/nixos/
+
+export NIX_CONFIG="experimental-features = nix-command flakes"
+
+
+
+    Run sudo nixos-rebuild switch --flake .#hostname to apply your system configuration.
+        If you're still on a live installation medium, run nixos-install --flake .#hostname instead, and reboot.
+    Run home-manager switch --flake .#username@hostname to apply your home configuration.
+        If you don't have home-manager installed, try nix shell nixpkgs#home-manager.
