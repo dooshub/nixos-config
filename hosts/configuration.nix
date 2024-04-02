@@ -45,6 +45,7 @@ in
   };
 
   users.users.${vars.user} = {
+    users.users.${user}.initialPassword = "1"
     isNormalUser = true;
     extraGroups = [ "wheel" "video" "audio" "camera" "networkmanager" "lp" "scanner" ];
   };
